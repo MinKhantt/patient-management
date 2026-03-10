@@ -2,6 +2,7 @@ version: "3.9"
 
 services:
 
+  # --- PATIENT SERVICE ---
   patient-service-db:
     image: postgres:latest
     container_name: patient-service-db
@@ -15,15 +16,17 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
     networks:
-      - patient-network
+      - app-network
     healthcheck:
-        test: [ "CMD-SHELL", "pg_isready -U admin_user -d db" ]
-        interval: 5s
-        timeout: 5s
-        retries: 5
+      test: [ "CMD-SHELL", "pg_isready -U admin_user -d db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   patient-service:
-    build: .
+    build:
+      context: ./patient-service
+    image: patient-service:latest
     container_name: patient-service
     ports:
       - "4000:4000"
@@ -37,10 +40,23 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_SQL_INIT_MODE=always
     networks:
-      - patient-network
+      - app-network
 
+  # --- BILLING SERVICE ---
+  billing-service:
+    build:
+      context: ./billing-service
+    image: billing-service:latest
+    container_name: billing-service
+    ports:
+      - "4001:4001"
+      - "9001:9001"
+    networks:
+      - app-network
+
+# --- SHARED RESOURCES ---
 networks:
-  patient-network:
+  app-network: # One unified network for all services
 
 volumes:
   postgres_data:
