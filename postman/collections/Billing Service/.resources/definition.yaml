@@ -1,0 +1,6 @@
+$kind: collection
+name: Billing Service
+description: 'gRPC API for the Billing Service in the Patient Management System'
+variables:
+  - key: billingServiceGrpcUrl
+    value: 'localhost:9001'

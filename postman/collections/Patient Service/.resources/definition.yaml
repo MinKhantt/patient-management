@@ -1,0 +1,8 @@
+$kind: collection
+name: Patient Service
+description: REST API for managing patients in the Patient Management System
+variables:
+  - key: patientServiceBaseUrl
+    value: 'http://localhost:4000'
+  - key: patientId
+    value: '123e4567-e89b-12d3-a456-426614174000'

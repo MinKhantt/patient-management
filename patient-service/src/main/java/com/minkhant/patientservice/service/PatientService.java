@@ -4,6 +4,7 @@ import com.minkhant.patientservice.dto.PatientRequestDto;
 import com.minkhant.patientservice.dto.PatientResponseDTO;
 import com.minkhant.patientservice.exception.EmailAlreadyExistException;
 import com.minkhant.patientservice.exception.PatientNotFoundException;
+import com.minkhant.patientservice.grpc.BillingServiceGrpcClient;
 import com.minkhant.patientservice.mapper.PatientMapper;
 import com.minkhant.patientservice.model.Patient;
 import com.minkhant.patientservice.repository.PatientRepository;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PatientService implements IPatientService {
     private final PatientRepository patientRepository;
+    private final BillingServiceGrpcClient billingServiceGrpcClient;
 
     @Override
     public List<PatientResponseDTO> getAllPatients() {
@@ -44,6 +46,9 @@ public class PatientService implements IPatientService {
         }
         Patient newPatient = PatientMapper.toPatient(patientRequestDto);
         patientRepository.save(newPatient);
+
+        billingServiceGrpcClient.createBillingAccount(newPatient.getId().toString(), newPatient.getName(), newPatient.getEmail());
+
         return PatientMapper.toPatientResponseDTO(newPatient);
     }
 

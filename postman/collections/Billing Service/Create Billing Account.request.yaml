@@ -1,0 +1,14 @@
+$kind: grpc-request
+name: Create Billing Account
+url: grpc://{{billingServiceGrpcUrl}}
+schema:
+  source: auto
+order: 1000
+methodPath: ""
+message:
+  content: |-
+    {
+      "patientId": "123e4567-e89b-12d3-a456-426614174000",
+      "name": "John Doe",
+      "email": "john.doe@example.com"
+    }
