@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
 
   # --- PATIENT SERVICE ---
@@ -18,7 +16,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_NAME} -d ${DB_NAME}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -33,14 +31,17 @@ services:
     depends_on:
       patient-service-db:
         condition: service_healthy
+      billing-service:
+        condition: service_started
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://patient-service-db:${DB_PORT_INTERNAL}/${DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SPRING_SQL_INIT_MODE=always
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${JPA_DDL_AUTO}
+      - SPRING_SQL_INIT_MODE=${SQL_INIT_MODE}
       - BILLING_SERVICE_ADDRESS=billing-service
       - BILLING_SERVICE_GRPC_PORT=${BILLING_SERVICE_GRPC_PORT}
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=${SPRING_KAFKA_BOOTSTRAP_SERVERS}
     networks:
       - app-network
 
@@ -52,25 +53,26 @@ services:
     container_name: billing-service
     ports:
       - "${BILLING_SERVICE_HTTP_PORT}:${BILLING_SERVICE_HTTP_PORT}"
-      - "${BILLING_SERVICE_GRPC_PORT}:${BILLING_SERVICE_GRPC_PORT}"
+      - "${BILLING_SERVICE_GRPC_PORT}:9001"
     networks:
       - app-network
 
   # --- Kafka ---
   kafka:
-    image: bitnami/kafka:latest
+    image: apache/kafka:latest
     container_name: kafka
     ports:
-      - "${KAFKA_PORT_INTERNAL}:${KAFKA_PORT_INTERNAL}"
-      - "${KAFKA_PORT_EXTERNAL}:${KAFKA_PORT_EXTERNAL}"
+      - "${KAFKA_PORT_EXTERNAL}:9092"
+      - "${KAFKA_PORT_DEVELOPMENT}:${KAFKA_PORT_DEVELOPMENT}"
     environment:
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:${KAFKA_PORT_INTERNAL},EXTERNAL://localhost:${KAFKA_PORT_EXTERNAL}
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:${KAFKA_PORT_INTERNAL},CONTROLLER://:9093,EXTERNAL://:${KAFKA_PORT_EXTERNAL}
-      - KAFKA_CFG_NODE_ID=0
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_NODE_ID=0
+      - KAFKA_PROCESS_ROLES=controller,broker
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:${KAFKA_PORT_DEVELOPMENT}
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:${KAFKA_PORT_DEVELOPMENT}
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
     networks:
       - app-network
 
