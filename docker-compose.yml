@@ -71,8 +71,6 @@ services:
       context: ./auth-service
     image: auth-service:latest
     container_name: auth-service
-    ports:
-      - "${AUTH_SERVICE_HTTP_PORT}:${AUTH_SERVICE_HTTP_PORT}"
     depends_on:
       auth-service-db:
         condition: service_healthy

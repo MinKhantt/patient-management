@@ -4,6 +4,7 @@ import com.minkhant.authservice.dto.LoginRequestDto;
 import com.minkhant.authservice.dto.LoginResponseDto;
 import com.minkhant.authservice.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +14,13 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/auth")
+@Tag(name = "Auth", description = "API for managing Auth")
 public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(summary = "Genterate token on user login")
+    @Operation(summary = "Generate token on user login")
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(
             @RequestBody LoginRequestDto loginRequestDto

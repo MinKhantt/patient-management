@@ -15,10 +15,21 @@ public class GatewayRoutesConfig {
                         .path("/api/patients", "/api/patients/**")
                         .filters(f -> f.stripPrefix(1))
                         .uri("http://patient-service:4000"))
+
                 .route("api-docs-patient-route", r -> r
                         .path("/api-docs/patients")
                         .filters(f -> f.rewritePath("/api-docs/patients", "/v3/api-docs"))
                         .uri("http://patient-service:4000"))
+
+                .route("auth-service-route", r -> r
+                        .path("/api/auth", "/api/auth/**")
+                        .filters(f -> f.stripPrefix(1))
+                        .uri("http://auth-service:4005"))
+
+                .route("api-docs-auth-route", r -> r
+                        .path("/api-docs/auth")
+                        .filters(f -> f.rewritePath("/api-docs/auth", "/v3/api-docs"))
+                        .uri("http://auth-service:4005"))
                 .build();
     }
 }
