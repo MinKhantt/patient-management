@@ -1,6 +1,6 @@
 services:
 
-  # --- PATIENT SERVICE ---
+  # --- PATIENT SERVICE DB ---
   patient-service-db:
     image: postgres:latest
     container_name: patient-service-db
@@ -21,13 +21,12 @@ services:
       timeout: 5s
       retries: 5
 
+  # --- PATIENT SERVICE ---
   patient-service:
     build:
       context: ./patient-service
     image: patient-service:latest
     container_name: patient-service
-    ports:
-      - "${PATIENT_SERVICE_PORT}:${PATIENT_SERVICE_PORT}"
     depends_on:
       patient-service-db:
         condition: service_healthy
@@ -75,6 +74,31 @@ services:
       - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
     networks:
       - app-network
+
+  # --- Analytics Service ---
+  analytics-service:
+    build:
+      context: ./analytics-service
+    image: analytics-service:latest
+    container_name: analytics-service
+    ports:
+      - "${ANALYTICS_SERVICE_HTTP_PORT}:${ANALYTICS_SERVICE_HTTP_PORT}"
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+    networks:
+      - app-network
+
+  # --- Api Gateway ---
+  api-gateway:
+    build:
+      context: ./api-gateway
+    image: api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "${API_GATEWAY_HTTP_PORT}:${API_GATEWAY_HTTP_PORT}"
+    networks:
+      - app-network
+
 
 # --- SHARED RESOURCES ---
 networks:
