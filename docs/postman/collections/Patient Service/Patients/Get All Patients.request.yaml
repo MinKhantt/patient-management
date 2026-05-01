@@ -1,0 +1,4 @@
+$kind: http-request
+method: GET
+url: '{{patientServiceBaseUrl}}/patients'
+order: 1000

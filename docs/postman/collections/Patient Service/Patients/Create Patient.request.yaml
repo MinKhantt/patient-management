@@ -1,0 +1,17 @@
+$kind: http-request
+name: Create Patient
+method: POST
+url: "{{patientServiceBaseUrl}}/patients"
+order: 3000
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Min Khant Maung",
+      "email": "minkhant@gmail.com",
+      "address": "123 Main St, Springfield",
+      "dateOfBirth": "2003-09-25",
+      "registeredDate": "2026-03-13"
+    }

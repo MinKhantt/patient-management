@@ -1,0 +1,4 @@
+$kind: http-request
+method: DELETE
+url: '{{patientServiceBaseUrl}}/patients/{{patientId}}'
+order: 5000
