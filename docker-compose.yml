@@ -136,6 +136,8 @@ services:
     container_name: api-gateway
     ports:
       - "${API_GATEWAY_HTTP_PORT}:${API_GATEWAY_HTTP_PORT}"
+    environment:
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
     networks:
       - app-network
 
