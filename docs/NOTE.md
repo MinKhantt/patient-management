@@ -10,6 +10,13 @@ What I learn in this project
 - Integration test
 - Deploying to AWS using localstack and infrastructure as code
 
+Introduction Kafka
+![image.png](images/img_5.png)
+
+![image.png](images/img_6.png)
+
+![image.png](images/img_7.png)
+
 Introduction API Gateways
 
 - An API Gateway acts like as a single entry point for clients to interact with multiple microservices
@@ -29,6 +36,4 @@ Auth Service
 
 Testing
 ![image.png](images/img_4.png)
-
-opencode -s ses_227c0a716ffe226Pd5Qu4dp9OC
   
